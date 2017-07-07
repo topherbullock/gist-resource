@@ -14,14 +14,14 @@ Add the following to your pipeline's `resource_types`
 ```
 
 
-##Source Configuration
+## Source Configuration
 
 - `id`: Required. The github gist ID
 
 - `access_token`: Optional. the Github Access Token to use, with `gist` permissions
 
 
-##Behaviour
+## Behaviour
 
 ### `check`: Check for new gist revisions
 
