@@ -45,5 +45,4 @@ func versionsFrom(commits []*github.GistCommit, from *Version) []Version {
 	}
 
 	return versions
-
 }
