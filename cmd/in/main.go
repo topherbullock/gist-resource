@@ -2,10 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"os"
-	"path"
 
 	"github.com/pivotal-topher-bullock/gist-resource/resource"
 )
@@ -20,16 +18,13 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	files, err := resource.In(input)
+	output, err := resource.In(destination, input)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	for filename, file := range files {
-		data := []byte(*file.Content)
-		err := ioutil.WriteFile(path.Join(destination, string(filename)), data, 0755)
-		if err != nil {
-			log.Fatalln(err)
-		}
+	err = json.NewEncoder(os.Stdout).Encode(output)
+	if err != nil {
+		log.Fatalln(err)
 	}
 }
