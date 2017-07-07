@@ -8,25 +8,42 @@ import (
 )
 
 type CheckRequest struct {
-	Source  Source  `json:"source"`
-	Version Version `json:"version"`
+	Source  Source   `json:"source"`
+	Version *Version `json:"version,omitempty"`
 }
 
 func Check(request CheckRequest) ([]Version, error) {
-	var versions []Version
 	source := request.Source
-	// TODO: use dis --> version := request.Version
 
 	client := internal.NewGithubClient(source.Token)
 
 	commits, _, err := client.Gists.ListCommits(context.Background(), source.Id, &github.ListOptions{})
 	if err != nil {
-		return versions, err
+		return []Version{}, err
 	}
+
+	return versionsFrom(commits, request.Version), nil
+}
+
+func versionsFrom(commits []*github.GistCommit, from *Version) []Version {
+	if from == nil {
+		commit := commits[len(commits)-1]
+		return []Version{Version{"sha": *commit.Version}}
+	}
+
+	var versions []Version
+
+	fromVersion := *from
 
 	for _, commit := range commits {
-		versions = append(versions, Version{"sha": *commit.Version})
+		version := Version{"sha": *commit.Version}
+		versions = append([]Version{version}, versions...)
+
+		if *commit.Version == fromVersion["sha"] {
+			return versions
+		}
 	}
 
-	return versions, nil
+	return versions
+
 }
