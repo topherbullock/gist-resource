@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -eux
+
+GOOS="${GOOS:-linux}"
+
+export CGO_ENABLED=0
+
+my_dir="$( cd "$( dirname "${0}" )" && pwd )"
+base_dir="$( cd "${my_dir}/.." && pwd )"
+
+pushd "${base_dir}" > /dev/null
+  GOOS="${GOOS}" go build \
+      -o "${base_dir}/cmd/check/check" \
+      ./cmd/check
+  GOOS="${GOOS}" go build \
+      -o "${base_dir}/cmd/in/in" \
+      ./cmd/in
+  GOOS="${GOOS}" go build \
+      -o "${base_dir}/cmd/out/out" \
+      ./cmd/out
+popd > /dev/null
