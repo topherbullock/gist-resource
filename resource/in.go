@@ -21,8 +21,13 @@ type Params struct {
 }
 
 type InResult struct {
-	Version  Version     `json:"version"`
-	Metadata github.Gist `json:"metadata"`
+	Version  Version         `json:"version"`
+	Metadata []MetadataField `json:"metadata"`
+}
+
+type MetadataField struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
 }
 
 type Files map[github.GistFilename]github.GistFile
@@ -59,6 +64,27 @@ func In(destination string, request InRequest) (InResult, error) {
 
 	return InResult{
 		Version:  version,
-		Metadata: *gist,
+		Metadata: metadataFields(*gist),
 	}, nil
+}
+
+func metadataFields(gist github.Gist) []MetadataField {
+	return []MetadataField{
+		MetadataField{
+			Name:  "Owner",
+			Value: *gist.Owner.Login,
+		},
+		MetadataField{
+			Name:  "CreatedAt",
+			Value: gist.CreatedAt.String(),
+		},
+		MetadataField{
+			Name:  "UpdatedAt",
+			Value: gist.UpdatedAt.String(),
+		},
+		MetadataField{
+			Name:  "URL",
+			Value: *gist.HTMLURL,
+		},
+	}
 }
